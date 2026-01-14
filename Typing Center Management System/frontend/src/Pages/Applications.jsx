@@ -17,7 +17,7 @@ import {
 } from 'lucide-react'; // Added CheckCircle and XCircle
 import { Card, CardContent } from "@/Components/ui/card";
 import { Button } from "@/Components/ui/button";
-import { Input } from "@/cardcomponents/ui/input";
+import { Input } from "@/Components/ui/input";
 import { Badge } from "@/Components/ui/badge";
 import {
   Table,
@@ -390,3 +390,4 @@ export default function Applications() {
   );
 
 }
+
