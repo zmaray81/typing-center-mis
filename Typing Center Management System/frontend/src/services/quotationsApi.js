@@ -1,6 +1,7 @@
 import { getToken } from './authApi';
 
-const API = "http://localhost:4000/api/quotations";
+const API_BASE = import.meta.env.VITE_API_URL || "http://localhost:4000";
+const API = `${API_BASE}/api/quotations`;
 
 const getHeaders = () => {
   const headers = {
@@ -17,8 +18,8 @@ const getHeaders = () => {
 
 export const getQuotations = async (showAll = false) => {
   const url = showAll
-    ? "http://localhost:4000/api/quotations/all"
-    : "http://localhost:4000/api/quotations";
+    ? `${API_BASE}/api/quotations/all`
+    : `${API_BASE}/api/quotations`;
 
   const res = await fetch(url, {
     headers: getHeaders()
@@ -70,9 +71,10 @@ export const deleteQuotation = async (id) => {
 };
 
 export const generateWhatsAppMessage = (quotation) => {
+  const FRONTEND_URL = import.meta.env.VITE_API_URL || "http://localhost:5173";
   return `Quotation ${quotation.quotation_number} from Bab Alyusr Business Setup Services\n` +
          `Client: ${quotation.client_name}\n` +
          `Date: ${quotation.date}\n` +
          `Total Amount: AED ${quotation.total}\n` +
-         `View Details: http://localhost:5173/quotations/${quotation.id}`;
+         `View Details: ${FRONTEND_URL}/quotations/${quotation.id}`;
 };
