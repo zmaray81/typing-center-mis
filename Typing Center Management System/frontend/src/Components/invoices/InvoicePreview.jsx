@@ -59,12 +59,13 @@ export default function InvoicePreview({ invoice, onClose, onEdit, onRecordPayme
   const [showHistory, setShowHistory] = useState(false);
   const [auditHistory, setAuditHistory] = useState([]);
   const [loadingHistory, setLoadingHistory] = useState(false);
+  const API_BASE = import.meta.env.VITE_API_URL || "http://localhost:4000";
 
   // Function to load history
   const loadAuditHistory = async () => {
     setLoadingHistory(true);
     try {
-      const response = await fetch(`http://localhost:4000/api/invoices/${invoice.id}/audit`);
+      const response = await fetch(`${API_BASE}/api/invoices/${invoice.id}/audit`);
       const data = await response.json();
       setAuditHistory(data);
     } catch (error) {
@@ -110,7 +111,7 @@ export default function InvoicePreview({ invoice, onClose, onEdit, onRecordPayme
           <Button 
             variant="outline" 
             onClick={() => {
-              window.open(`http://localhost:4000/api/invoices/${invoice.id}/pdf`, '_blank');
+              window.open(`${API_BASE}/api/invoices/${invoice.id}/pdf`, '_blank');
             }}
           >
             <Download className="w-4 h-4 mr-2" />
@@ -133,7 +134,7 @@ export default function InvoicePreview({ invoice, onClose, onEdit, onRecordPayme
                 <Button 
                   className="w-full bg-amber-500 hover:bg-amber-600 text-white"
                   onClick={() => {
-                    window.open(`http://localhost:4000/api/invoices/${invoice.id}/pdf`, '_blank');
+                    window.open(`${API_BASE}/api/invoices/${invoice.id}/pdf`, '_blank');
                   }}
                 >
                   <Download className="w-4 h-4 mr-2" />
@@ -160,15 +161,16 @@ export default function InvoicePreview({ invoice, onClose, onEdit, onRecordPayme
           <Button 
             variant="outline"
             onClick={() => {
-              const pdfUrl = `http://localhost:4000/api/invoices/${invoice.id}/pdf`;
-              const message = `Invoice ${invoice.invoice_number} from Bab Alyusr Business Setup Services\n` +
-                             `Client: ${invoice.client_name}\n` +
-                             `Total Amount: AED ${invoice.total}\n` +
-                             `Payment Status: ${invoice.payment_status}\n` +
-                             `Download PDF: ${pdfUrl}`;
-              const whatsappUrl = `https://wa.me/?text=${encodeURIComponent(message)}`;
-              window.open(whatsappUrl, '_blank');
-            }}
+  const pdfUrl = `${API_BASE}/api/invoices/${invoice.id}/pdf`;
+  const FRONTEND_URL = window.location.origin;
+  const message = `Invoice ${invoice.invoice_number} from Bab Alyusr Business Setup Services\n` +
+                 `Client: ${invoice.client_name}\n` +
+                 `Total Amount: AED ${invoice.total}\n` +
+                 `Payment Status: ${invoice.payment_status}\n` +
+                 `View Invoice: ${FRONTEND_URL}/invoices`;
+  const whatsappUrl = `https://wa.me/?text=${encodeURIComponent(message)}`;
+  window.open(whatsappUrl, '_blank');
+}}
           >
             <MessageSquare className="w-4 h-4 mr-2" />
             Send WhatsApp
