@@ -109,8 +109,9 @@ export default function QuotationView() {
           <Button 
             variant="outline" 
             onClick={() => {
-              window.open(`http://localhost:4000/api/quotations/${id}/pdf`, '_blank');
-            }}
+  const API_BASE = import.meta.env.VITE_API_URL || "http://localhost:4000";
+  window.open(`${API_BASE}/api/quotations/${id}/pdf`, '_blank');
+}}
           >
             <Download className="w-4 h-4 mr-2" />
             Download PDF
@@ -146,9 +147,10 @@ export default function QuotationView() {
               <Button 
                 className="w-full mt-2 bg-blue-600 hover:bg-blue-700 text-white"
                 onClick={() => {
-                  window.open(`http://localhost:4000/api/quotations/${id}/pdf`, '_blank');
-                  alert('📥 PDF download started!\n\nNext: Click "Step 2" below');
-                }}
+  const API_BASE = import.meta.env.VITE_API_URL || "http://localhost:4000";
+  window.open(`${API_BASE}/api/quotations/${id}/pdf`, '_blank');
+  alert('📥 PDF download started!\n\nNext: Click "Step 2" below');
+}}
               >
                 <Download className="w-4 h-4 mr-2" />
                 Click to Download PDF
@@ -232,15 +234,17 @@ export default function QuotationView() {
           <Button 
             variant="outline"
             onClick={() => {
-              const pdfUrl = `http://localhost:4000/api/quotations/${id}/pdf`;
-              const message = `Quotation ${quotation.quotation_number} from Bab Alyusr Business Setup Services\n` +
-                             `Client: ${quotation.client_name}\n` +
-                             `Date: ${quotation.date}\n` +
-                             `Total Amount: AED ${quotation.total}\n` +
-                             `Download PDF: ${pdfUrl}`;
-              const whatsappUrl = `https://wa.me/?text=${encodeURIComponent(message)}`;
-              window.open(whatsappUrl, '_blank');
-            }}
+  const API_BASE = import.meta.env.VITE_API_URL || "http://localhost:4000";
+  const pdfUrl = `${API_BASE}/api/quotations/${id}/pdf`;
+  const FRONTEND_URL = window.location.origin;
+  const message = `Quotation ${quotation.quotation_number} from Bab Alyusr Business Setup Services\n` +
+                 `Client: ${quotation.client_name}\n` +
+                 `Date: ${quotation.date}\n` +
+                 `Total Amount: AED ${quotation.total}\n` +
+                 `View Details: ${FRONTEND_URL}/quotations/${id}`;
+  const whatsappUrl = `https://wa.me/?text=${encodeURIComponent(message)}`;
+  window.open(whatsappUrl, '_blank');
+}}
           >
             <MessageSquare className="w-4 h-4 mr-2" />
             Send WhatsApp
