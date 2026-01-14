@@ -26,7 +26,7 @@ import {
 import { Card, CardContent, CardHeader, CardTitle } from "@/Components/ui/card";
 import { Button } from "@/Components/ui/button";
 import { Input } from "@/Components/ui/input";
-import { Label } from "@/cardomponents/ui/label";
+import { Label } from "@/Components/ui/label";
 import { Badge } from "@/Components/ui/badge";
 import { Textarea } from "@/Components/ui/textarea";
 import {
@@ -637,4 +637,5 @@ export default function Clients() {
 </AlertDialog>
     </div>
   );
+
 }
