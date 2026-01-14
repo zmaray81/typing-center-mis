@@ -1,8 +1,5 @@
-import { getApiUrl } from '../config';
-
-const AUTH_API = getApiUrl('/api/auth');
-
-const API = "http://localhost:4000/api/auth";
+const API_BASE = import.meta.env.VITE_API_URL || "http://localhost:4000";
+const API = `${API_BASE}/api/auth`;
 
 // Store token in localStorage
 const TOKEN_KEY = "typing_center_token";
