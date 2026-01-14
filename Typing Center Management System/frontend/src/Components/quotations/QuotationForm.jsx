@@ -190,15 +190,16 @@ export default function QuotationForm({ quotation, clients, onClose, onSuccess }
       total,
     };
 
-    const res = await fetch(
-      quotation ? `http://localhost:4000/api/quotations/${quotation.id}` 
-                : `http://localhost:4000/api/quotations`,
-      {
-        method: quotation ? "PUT" : "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(quotationData),
-      }
-    );
+    const API_BASE = import.meta.env.VITE_API_URL || "http://localhost:4000";
+const res = await fetch(
+  quotation ? `${API_BASE}/api/quotations/${quotation.id}` 
+            : `${API_BASE}/api/quotations`,
+  {
+    method: quotation ? "PUT" : "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(quotationData),
+  }
+);
 
     if (!res.ok) {
       throw new Error("Failed to save quotation");
@@ -471,4 +472,5 @@ export default function QuotationForm({ quotation, clients, onClose, onSuccess }
       </form>
     </div>
   );
+
 }
