@@ -1,7 +1,7 @@
 import express from "express";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
-import { pool } from "../db.js";  // Changed from getOne, execute to pool
+import { getOne, execute } from "../db.js";
 
 const loginAttempts = new Map();
 const MAX_ATTEMPTS = 5;
@@ -37,12 +37,11 @@ router.post("/login", async (req, res) => {
       });
     }
 
-    // Find user - using pool directly
-    const result = await pool.query(
+    // Find user - using getOne helper
+    const user = await getOne(
       "SELECT * FROM users WHERE username = $1 AND is_active = true",
       [username]
     );
-    const user = result.rows[0];
 
     let isValidPassword = false;
     
@@ -71,8 +70,8 @@ router.post("/login", async (req, res) => {
     // Reset attempts on successful login
     loginAttempts.delete(ip);
 
-    // Update last login - using pool directly
-    await pool.query(
+    // Update last login - using execute helper
+    await execute(
       "UPDATE users SET last_login = CURRENT_TIMESTAMP WHERE id = $1",
       [user.id]
     );
@@ -124,11 +123,10 @@ router.get("/check", async (req, res) => {
 
     const decoded = jwt.verify(token, JWT_SECRET);
     
-    const result = await pool.query(
+    const user = await getOne(
       "SELECT id, username, full_name, email, role, is_active FROM users WHERE id = $1 AND is_active = true",
       [decoded.id]
     );
-    const user = result.rows[0];
 
     if (!user) {
       return res.status(401).json({ 
