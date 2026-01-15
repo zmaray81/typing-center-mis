@@ -8,7 +8,7 @@ const LOCKOUT_TIME = 15 * 60 * 1000; // 15 minutes
 
 const router = express.Router();
 
-const JWT_SECRET = process.env.JWT_SECRET;
+const JWT_SECRET = process.env.JWT_SECRET || "typing-center-development-secret-2024";
 
 /* =========================
    LOGIN
@@ -161,5 +161,6 @@ router.post("/logout", (req, res) => {
     message: "Logout successful" 
   });
 });
+
 
 export default router;
