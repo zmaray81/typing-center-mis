@@ -5,7 +5,7 @@ import { getDb } from "../db.js";
 
 const router = express.Router();
 
-const JWT_SECRET = process.env.JWT_SECRET;
+const JWT_SECRET = process.env.JWT_SECRET || "my-very-secure-typing-center-secret-2024";
 
 // Middleware to verify JWT and check admin role
 const requireAdmin = async (req, res, next) => {
@@ -242,5 +242,6 @@ router.put("/:id/password", async (req, res) => {
     });
   }
 });
+
 
 export default router;
