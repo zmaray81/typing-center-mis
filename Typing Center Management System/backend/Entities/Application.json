@@ -1,0 +1,146 @@
+{
+  "name": "Application",
+  "type": "object",
+  "properties": {
+    "application_number": {
+      "type": "string",
+      "description": "Application tracking number"
+    },
+    "client_id": {
+      "type": "string",
+      "description": "Reference to client"
+    },
+    "client_name": {
+      "type": "string",
+      "description": "Client/Company name"
+    },
+    "person_name": {
+      "type": "string",
+      "description": "Applicant name"
+    },
+    "pre_approval_mb_number": {
+      "type": "string",
+      "description": "Pre-Approval MB Number"
+    },
+    "invoice_id": {
+      "type": "string",
+      "description": "Related invoice ID"
+    },
+    "application_type": {
+      "type": "string",
+      "enum": [
+        "new_visa_inside",
+        "new_visa_outside",
+        "visa_renewal",
+        "visa_cancellation",
+        "new_license",
+        "license_renewal",
+        "labour_card",
+        "establishment_card",
+        "other"
+      ],
+      "description": "Type of application"
+    },
+    "application_type_description": {
+      "type": "string",
+      "description": "Description if 'other' selected"
+    },
+    "emirate": {
+      "type": "string",
+      "enum": [
+        "dubai",
+        "sharjah",
+        "ajman",
+        "abu_dhabi",
+        "ras_al_khaimah",
+        "fujairah",
+        "umm_al_quwain"
+      ],
+      "description": "Processing emirate"
+    },
+    "current_step": {
+      "type": "string",
+      "enum": [
+        "first_visit",
+        "second_visit",
+        "third_visit",
+        "medical_application",
+        "eid_application",
+        "stamping",
+        "completed"
+      ],
+      "description": "Current processing step"
+    },
+    "steps_completed": {
+      "type": "array",
+      "description": "Completed steps with dates",
+      "items": {
+        "type": "object",
+        "properties": {
+          "step": {
+            "type": "string"
+          },
+          "completed_date": {
+            "type": "string"
+          },
+          "notes": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "in_progress",
+        "on_hold",
+        "approved",
+        "rejected"
+      ],
+      "description": "Overall status"
+    },
+    "start_date": {
+      "type": "string",
+      "format": "date",
+      "description": "Application start date"
+    },
+    "expected_completion": {
+      "type": "string",
+      "format": "date",
+      "description": "Expected completion date"
+    },
+    "completion_date": {
+      "type": "string",
+      "format": "date",
+      "description": "Actual completion date"
+    },
+    "documents": {
+      "type": "array",
+      "description": "Attached documents",
+      "items": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "url": {
+            "type": "string"
+          },
+          "uploaded_date": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "notes": {
+      "type": "string",
+      "description": "Additional notes"
+    }
+  },
+  "required": [
+    "client_name",
+    "person_name",
+    "application_type",
+    "status"
+  ]
+}

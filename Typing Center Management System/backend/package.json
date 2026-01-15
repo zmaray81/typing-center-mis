@@ -1,0 +1,26 @@
+{
+  "name": "typing-center-mis-backend",
+  "version": "1.0.0",
+  "type": "module",
+  "scripts": {
+    "start": "node src/server.js",
+    "dev": "node src/server.js",
+    "seed": "node src/seed.js",
+    "create-admin": "node src/createAdmin.js",
+    "setup": "npm run create-admin && npm run seed",
+    "debug": "node debug.js",
+    "init-db": "node -r dotenv/config -e \"import('./src/db.js').then(m => m.initializeDatabase())\""
+  },
+  "dependencies": {
+    "bcrypt": "^6.0.0",
+    "cors": "^2.8.5",
+    "dotenv": "^16.4.5",
+    "express": "^4.19.2",
+    "jsonwebtoken": "^9.0.3",
+    "lucide-react": "^0.562.0",
+    "nodemailer": "^7.0.12",
+    "pg": "^8.11.3",
+    "pg-pool": "^3.6.1",
+    "pdfkit": "^0.17.2"
+  }
+}
