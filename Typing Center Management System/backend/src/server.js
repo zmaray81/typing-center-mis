@@ -25,7 +25,7 @@ const allowedOrigins = [
   'http://localhost:5173',  // Local development
   'http://127.0.0.1:5173',  // Alternative localhost
   'http://localhost:4173',  // Vite preview
-  'https://typing-center-frontend.onrender.com'  // Your production frontend
+  'https://typing-center-mis-frontend.onrender.com'  // production frontend
 ];
 
 app.use(cors({
