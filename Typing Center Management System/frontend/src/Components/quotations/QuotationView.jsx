@@ -232,23 +232,31 @@ export default function QuotationView() {
 
           {/* WhatsApp Button */}
           <Button 
-            variant="outline"
-            onClick={() => {
-  const API_BASE = import.meta.env.VITE_API_URL || "http://localhost:4000";
-  const pdfUrl = `${API_BASE}/api/quotations/${id}/pdf`;
-  const FRONTEND_URL = window.location.origin;
-  const message = `Quotation ${quotation.quotation_number} from Bab Alyusr Business Setup Services\n` +
-                 `Client: ${quotation.client_name}\n` +
-                 `Date: ${quotation.date}\n` +
-                 `Total Amount: AED ${quotation.total}\n` +
-                 `View Details: ${FRONTEND_URL}/quotations/${id}`;
-  const whatsappUrl = `https://wa.me/?text=${encodeURIComponent(message)}`;
-  window.open(whatsappUrl, '_blank');
-}}
-          >
-            <MessageSquare className="w-4 h-4 mr-2" />
-            Send WhatsApp
-          </Button>
+  variant="outline"
+  onClick={() => {
+    // For production on Render
+    const pdfUrl = `https://typing-center-mis.onrender.com/api/quotations/${id}/pdf`;
+    
+    const message = `QUOTATION
+
+Quotation: ${quotation.quotation_number}
+Client: ${quotation.client_name}
+Date: ${quotation.date}
+Total: AED ${quotation.total}
+
+Download PDF here:
+${pdfUrl}
+
+Thank you!
+Bab Alyusr Business Setup Services`;
+    
+    const whatsappUrl = `https://wa.me/?text=${encodeURIComponent(message)}`;
+    window.open(whatsappUrl, '_blank');
+  }}
+>
+  <MessageSquare className="w-4 h-4 mr-2" />
+  Send WhatsApp
+</Button>
 
           {quotation.converted_to_invoice === 1 ? (
             <div className="text-sm text-green-700 bg-green-50 px-3 py-2 rounded-md">
@@ -370,3 +378,4 @@ export default function QuotationView() {
     </div>
   );
 }
+
