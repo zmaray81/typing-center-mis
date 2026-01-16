@@ -34,7 +34,7 @@ export default function QuotationView() {
   const [converting, setConverting] = useState(false);
 
   const handleConfirmConvert = async () => {
-    if (!quotation || quotation.converted_to_invoice === 1) return;
+    if (!quotation || quotation.converted_to_invoice === true) return;
 
     try {
       setConverting(true);
@@ -99,7 +99,7 @@ export default function QuotationView() {
           <Button variant="outline" onClick={() => window.print()}>Print</Button>
           
           <Button
-            disabled={quotation.converted_to_invoice === 1}
+            disabled={quotation.converted_to_invoice === true}
             onClick={() => navigate("/quotations", { state: { editId: id } })}
           >
             Edit
@@ -231,7 +231,7 @@ export default function QuotationView() {
 </Dialog>
 
           {/* WhatsApp Button */}
-          <Button 
+         <Button 
   variant="outline"
   onClick={() => {
     // For production on Render
@@ -258,7 +258,7 @@ Bab Alyusr Business Setup Services`;
   Send WhatsApp
 </Button>
 
-          {quotation.converted_to_invoice === 1 ? (
+          {quotation.converted_to_invoice === true ? (
             <div className="text-sm text-green-700 bg-green-50 px-3 py-2 rounded-md">
               <button
                 onClick={() => navigate(`/invoices?id=${quotation.invoice_id}`)}
@@ -314,7 +314,7 @@ Bab Alyusr Business Setup Services`;
           </div>
         </div>
 
-        {quotation.converted_to_invoice === 1 && (
+        {quotation.converted_to_invoice === true && (
           <div className="mt-2 inline-flex items-center px-3 py-1 rounded-full bg-green-100 text-green-700 text-sm font-medium">
             Converted to Invoice #{quotation.invoice_number}
           </div>
@@ -378,4 +378,3 @@ Bab Alyusr Business Setup Services`;
     </div>
   );
 }
-
