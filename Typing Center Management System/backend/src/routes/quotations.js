@@ -5,6 +5,76 @@ import { generateQuotationPDF } from "../utils/quotationPdf.js";
 const router = express.Router();
 
 /* =========================
+   GET SINGLE QUOTATION
+========================= */
+router.get("/:id", async (req, res) => {
+  try {
+    const row = await getOne(
+      `
+      SELECT 
+        q.*,
+        i.invoice_number
+      FROM quotations q
+      LEFT JOIN invoices i ON q.invoice_id = i.id
+      WHERE q.id = $1
+      `,
+      [req.params.id]
+    );
+
+    if (!row) {
+      return res.status(404).json({ error: "Quotation not found" });
+    }
+
+    // ✅ FIX: Convert date to yyyy-MM-dd for HTML input
+    const formattedDate = row.date ? new Date(row.date).toISOString().split('T')[0] : '';
+
+    const quotation = {
+      ...row,
+      items: row.items || [],
+      date: formattedDate, // ✅ This will be "2026-01-16" format
+      subtotal: Number(row.subtotal) || 0,
+      vat_amount: Number(row.vat_amount) || 0,
+      total: Number(row.total) || 0,
+      client_id: row.client_id ? Number(row.client_id) : null,
+      person_name: row.person_name || ''
+    };
+
+    res.json(quotation);
+  } catch (err) {
+    console.error("❌ Fetch quotation error:", err);
+    res.status(500).json({ error: "Failed to fetch quotation" });
+  }
+});
+
+/* =========================
+   DOWNLOAD QUOTATION PDF
+========================= */
+router.get("/:id/pdf", async (req, res) => {
+  try {
+    const quotation = await getOne(
+      "SELECT * FROM quotations WHERE id = $1",
+      [req.params.id]
+    );
+
+    if (!quotation) {
+      return res.status(404).json({ message: "Quotation not found" });
+    }
+
+    quotation.items = quotation.items || [];
+    
+    // ✅ TEMPORARY FIX: Convert numbers for PDF
+    quotation.subtotal = Number(quotation.subtotal) || 0;
+    quotation.vat_amount = Number(quotation.vat_amount) || 0;
+    quotation.total = Number(quotation.total) || 0;
+
+    generateQuotationPDF(quotation, res);
+  } catch (err) {
+    console.error("PDF error:", err);
+    res.status(500).json({ message: "Failed to generate PDF" });
+  }
+});
+
+/* =========================
    GET ALL QUOTATIONS
 ========================= */
 router.get("/", async (req, res) => {
@@ -28,16 +98,20 @@ router.get("/", async (req, res) => {
         q.converted_to_invoice,
         q.invoice_id,
         q.created_at,
-        i.invoice_number
+        i.invoice_number,
+        q.person_name  -- ✅ REMOVE THE "//" COMMENT, JUST KEEP THE FIELD
       FROM quotations q
       LEFT JOIN invoices i ON q.invoice_id = i.id
       ORDER BY q.created_at DESC
     `);
 
-    // PostgreSQL returns JSONB as objects
+    // ✅ FIX: Convert PostgreSQL decimals to JavaScript numbers
     const quotations = rows.map(q => ({
       ...q,
-      items: q.items || []
+      items: q.items || [],
+      subtotal: Number(q.subtotal) || 0,
+      vat_amount: Number(q.vat_amount) || 0,
+      total: Number(q.total) || 0
     }));
 
     res.json(quotations);
@@ -47,63 +121,14 @@ router.get("/", async (req, res) => {
   }
 });
 
-router.get("/all", async (req, res) => {
-  try {
-    const rows = await getAll(`
-      SELECT 
-        q.*,
-        i.invoice_number
-      FROM quotations q
-      LEFT JOIN invoices i ON q.invoice_id = i.id
-      ORDER BY q.created_at DESC
-    `);
-
-    const quotations = rows.map(q => ({
-      ...q,
-      items: q.items || []
-    }));
-
-    res.json(quotations);
-  } catch (err) {
-    console.error("❌ Fetch all quotations error:", err);
-    res.status(500).json({ error: "Failed to fetch all quotations" });
-  }
-});
-
-/* =========================
-   GET SINGLE QUOTATION
-========================= */
-router.get("/:id", async (req, res) => {
-  try {
-    const row = await getOne(
-      `
-      SELECT 
-        q.*,
-        i.invoice_number
-      FROM quotations q
-      LEFT JOIN invoices i ON q.invoice_id = i.id
-      WHERE q.id = $1
-      `,
-      [req.params.id]
-    );
-
-    if (!row) {
-      return res.status(404).json({ error: "Quotation not found" });
-    }
-
-    row.items = row.items || [];
-    res.json(row);
-  } catch (err) {
-    console.error("❌ Fetch quotation error:", err);
-    res.status(500).json({ error: "Failed to fetch quotation" });
-  }
-});
-
 /* =========================
    CREATE QUOTATION
 ========================= */
 router.post("/", async (req, res) => {
   try {
+    console.log("📦 CREATE QUOTATION REQUEST RECEIVED");
+    
+    // Get next quotation number
     const row = await getOne("SELECT COUNT(*) as count FROM quotations");
     const quotation_number = `QT-${new Date().getFullYear()}-${String(parseInt(row?.count || 0) + 1).padStart(4, "0")}`;
 
@@ -124,6 +149,12 @@ router.post("/", async (req, res) => {
       notes
     } = req.body;
 
+    // ✅ FIX: Stringify items for PostgreSQL
+    // PostgreSQL pg driver needs JSON string, not JavaScript object
+    let itemsToInsert = items || [];
+const itemsJson = JSON.stringify(itemsToInsert);
+console.log("🧹 Items to insert (stringified):", itemsJson);
+    // Insert into database
     const result = await execute(
       `INSERT INTO quotations (
         quotation_number,
@@ -135,7 +166,7 @@ router.post("/", async (req, res) => {
         activity,
         service_category,
         date,
-        items,
+        itemsJson,
         subtotal,
         vat_amount,
         total,
@@ -152,7 +183,7 @@ router.post("/", async (req, res) => {
         activity || null,
         service_category || null,
         date,
-        items || [],
+        itemsToInsert,  // ✅ Use STRINGIFIED JSON
         subtotal || 0,
         vat_amount || 0,
         total || 0,
@@ -161,10 +192,21 @@ router.post("/", async (req, res) => {
       ]
     );
 
-    res.json({ id: result.rows[0]?.id, quotation_number });
+    console.log("✅ Quotation created successfully:", quotation_number);
+    res.json({ 
+      success: true,
+      id: result.rows[0]?.id, 
+      quotation_number 
+    });
+    
   } catch (err) {
-    console.error("❌ Create quotation error:", err);
-    res.status(500).json({ error: "Failed to create quotation" });
+    console.error("❌ Create quotation error:", err.message);
+    console.error("❌ Full error:", err);
+    res.status(500).json({ 
+      success: false,
+      error: "Failed to create quotation",
+      details: err.message 
+    });
   }
 });
 
@@ -189,6 +231,9 @@ router.put("/:id", async (req, res) => {
       status,
       notes
     } = req.body;
+
+    // ✅ FIX: Stringify items
+   const itemsToUpdate = JSON.stringify(items || []);
 
     await execute(
       `UPDATE quotations SET
@@ -217,7 +262,7 @@ router.put("/:id", async (req, res) => {
         activity || null,
         service_category || null,
         date,
-        items || [],
+        itemsToUpdate,  // ✅ Use STRINGIFIED JSON
         subtotal || 0,
         vat_amount || 0,
         total || 0,
@@ -231,28 +276,6 @@ router.put("/:id", async (req, res) => {
   } catch (err) {
     console.error("❌ Update quotation error:", err);
     res.status(500).json({ error: "Failed to update quotation" });
-  }
-});
-
-/* =========================
-   DOWNLOAD QUOTATION PDF
-========================= */
-router.get("/:id/pdf", async (req, res) => {
-  try {
-    const quotation = await getOne(
-      "SELECT * FROM quotations WHERE id = $1",
-      [req.params.id]
-    );
-
-    if (!quotation) {
-      return res.status(404).json({ message: "Quotation not found" });
-    }
-
-    quotation.items = quotation.items || [];
-    generateQuotationPDF(quotation, res);
-  } catch (err) {
-    console.error("PDF error:", err);
-    res.status(500).json({ message: "Failed to generate PDF" });
   }
 });
 
