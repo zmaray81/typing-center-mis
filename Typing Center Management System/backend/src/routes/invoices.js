@@ -164,7 +164,7 @@ router.post("/", async (req, res) => {
         license_type || null,
         activity || null,
         date,
-        items || [],
+        items ? JSON.stringify(items) : '[]',
         subtotal || 0,
         include_vat ? true : false,
         vat_amount || 0,
@@ -172,7 +172,7 @@ router.post("/", async (req, res) => {
         payment_status || "unpaid",
         amount_paid || 0,
         balance ?? total,
-        payments || [],
+        payments ? JSON.stringify(payments) : '[]',
         notes || ""
       ]
     );
@@ -264,7 +264,7 @@ router.put("/:id", async (req, res) => {
         license_type || null,
         activity || null,
         date,
-        items || [],
+        items ? JSON.stringify(items) : '[]',
         subtotal || 0,
         include_vat ? true : false,
         vat_amount || 0,
@@ -272,7 +272,7 @@ router.put("/:id", async (req, res) => {
         payment_status,
         amount_paid || 0,
         balance || 0,
-        payments || [],
+        payments ? JSON.stringify(payments) : '[]',
         notes || "",
         req.params.id
       ]
@@ -382,6 +382,28 @@ router.post("/from-quotation/:quotationId", async (req, res) => {
       });
     }
 
+    // ✅ FIX: Ensure items is properly formatted JSON
+    let itemsToInsert = [];
+    
+    if (quotation.items) {
+      if (typeof quotation.items === 'string') {
+        // If it's a JSON string, parse it to ensure it's valid
+        try {
+          itemsToInsert = JSON.parse(quotation.items);
+        } catch (err) {
+          console.error("Failed to parse items string:", err);
+          itemsToInsert = [];
+        }
+      } else if (Array.isArray(quotation.items)) {
+        // If it's already an array, use it directly
+        itemsToInsert = quotation.items;
+      }
+    }
+
+    // ✅ FIX: Stringify the items array for PostgreSQL JSONB
+    // PostgreSQL requires JSON string for JSONB columns
+    const itemsJson = JSON.stringify(itemsToInsert);
+
     // Generate sequential invoice number
     const last = await getOne(`
       SELECT invoice_number
@@ -402,6 +424,16 @@ router.post("/from-quotation/:quotationId", async (req, res) => {
 
     const invoiceNumber = `INV-${year}-${String(seq).padStart(5, "0")}`;
     const id = randomUUID();
+
+    // ✅ DEBUG: Log the values before inserting
+    console.log("🔄 Converting quotation to invoice:");
+    console.log("Invoice ID:", id);
+    console.log("Invoice Number:", invoiceNumber);
+    console.log("Quotation ID:", quotation.id);
+    console.log("Items (stringified):", itemsJson);
+    console.log("Items type:", typeof itemsJson);
+    console.log("Subtotal:", Number(quotation.subtotal) || 0);
+    console.log("Total:", Number(quotation.total) || 0);
 
     await execute(
       `INSERT INTO invoices (
@@ -436,14 +468,14 @@ router.post("/from-quotation/:quotationId", async (req, res) => {
         quotation.license_type,
         quotation.activity,
         quotation.date,
-        quotation.items || [],
-        quotation.subtotal || 0,
-        quotation.vat_amount || 0,
-        quotation.total,
+        itemsJson,  // ✅ Use STRINGIFIED JSON for PostgreSQL
+        Number(quotation.subtotal) || 0,
+        Number(quotation.vat_amount) || 0,
+        Number(quotation.total) || 0,
         "unpaid",
         0,
-        quotation.total,
-        [],
+        Number(quotation.total) || 0,
+        '[]',  // ✅ Empty JSON array as string
         quotation.notes || ""
       ]
     );
@@ -488,8 +520,12 @@ router.post("/from-quotation/:quotationId", async (req, res) => {
 
     res.json({ id, invoice_number: invoiceNumber });
   } catch (err) {
-    console.error("❌ Convert quotation to invoice error:", err);
-    res.status(500).json({ error: "Failed to convert quotation to invoice" });
+    console.error("❌ Convert quotation to invoice error:", err.message);
+    console.error("❌ Full error:", err);
+    res.status(500).json({ 
+      error: "Failed to convert quotation to invoice",
+      details: err.message 
+    });
   }
 });
 
