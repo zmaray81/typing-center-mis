@@ -30,7 +30,7 @@ router.post("/", async (req, res) => {
       trade_license_number
     } = req.body;
 
-    // ✅ Check for duplicates BEFORE inserting
+   // ✅ Check for duplicates BEFORE inserting
 let duplicateQuery = `
   SELECT id, company_name, contact_person, phone, email 
   FROM clients 
@@ -226,6 +226,5 @@ router.delete("/:id", async (req, res) => {
     });
   }
 });
-
 
 export default router;
