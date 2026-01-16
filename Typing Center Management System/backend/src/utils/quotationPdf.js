@@ -15,6 +15,20 @@ const SERVICE_LABELS = {
 };
 
 export function generateQuotationPDF(quotation, res) {
+  // ✅ FIX: Convert PostgreSQL string numbers to actual numbers
+  quotation.subtotal = Number(quotation.subtotal) || 0;
+  quotation.vat_amount = Number(quotation.vat_amount) || 0;
+  quotation.total = Number(quotation.total) || 0;
+  
+  // Also fix items amounts if needed
+  if (quotation.items && Array.isArray(quotation.items)) {
+    quotation.items = quotation.items.map(item => ({
+      ...item,
+      amount: Number(item.amount) || 0,
+      quantity: Number(item.quantity) || 1
+    }));
+  }
+  
   const doc = new PDFDocument({
     size: "A4",
     margin: 40,
