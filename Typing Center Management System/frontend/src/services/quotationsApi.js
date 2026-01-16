@@ -78,4 +78,3 @@ export const generateWhatsAppMessage = (quotation) => {
          `Total Amount: AED ${quotation.total}\n` +
          `View Details: ${FRONTEND_URL}/quotations/${quotation.id}`;
 };
-
