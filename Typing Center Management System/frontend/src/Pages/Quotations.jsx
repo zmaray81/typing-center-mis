@@ -113,14 +113,14 @@ useEffect(() => {
     }
   }, []);
 
-  const filteredQuotations = quotations.filter((q) => {
+ const filteredQuotations = quotations.filter((q) => {
   // Filter by converted status
   if (showConverted) {
     // Show Converted History = ONLY converted quotations
-    if (q.converted_to_invoice !== 1) return false;
+    if (q.converted_to_invoice !== true) return false; // ✅ Changed from !== 1
   } else {
     // Hide Converted = ONLY non-converted quotations
-    if (q.converted_to_invoice === 1) return false;
+    if (q.converted_to_invoice === true) return false; // ✅ Changed from === 1
   }
   
   // Then filter by search query
@@ -226,7 +226,7 @@ useEffect(() => {
 
 <TableCell>
   {q.quotation_number}
-  {q.converted_to_invoice === 1 && (
+  {q.converted_to_invoice === true && (
     <Badge className="ml-2 bg-green-100 text-green-700">
       Converted
     </Badge>
@@ -261,7 +261,7 @@ useEffect(() => {
   </DropdownMenuItem>
 
   {/* VIEW INVOICE (only if converted) */}
-  {q.converted_to_invoice === 1 && q.invoice_id && (
+  {q.converted_to_invoice === true && q.invoice_id && (
     <DropdownMenuItem
       onClick={() => navigate(`/invoices?id=${q.invoice_id}`)}
     >
@@ -271,7 +271,7 @@ useEffect(() => {
 
   {/* EDIT (disabled if converted) */}
   <DropdownMenuItem
-    disabled={q.converted_to_invoice === 1}
+    disabled={q.converted_to_invoice === true}
     onClick={() => {
       setEditingQuotation(q);
       setShowForm(true);
@@ -285,7 +285,7 @@ useEffect(() => {
   {isAdmin && (
   <DropdownMenuItem
     className="text-red-600"
-    disabled={q.converted_to_invoice === 1}
+    disabled={q.converted_to_invoice === true}
     onClick={() => setDeleteConfirm(q)}
   >
     <Trash2 className="w-4 h-4 mr-2" />
@@ -311,7 +311,7 @@ useEffect(() => {
       <AlertDialogTitle>Delete Quotation</AlertDialogTitle>
       <AlertDialogDescription>
         Are you sure you want to delete quotation {deleteConfirm?.quotation_number}?
-        {deleteConfirm?.converted_to_invoice === 1 && (
+        {deleteConfirm?.converted_to_invoice === true && (
           <div className="mt-2 p-2 bg-red-50 text-red-700 rounded">
             ⚠️ Cannot delete quotation that has been converted to invoice.
           </div>
@@ -327,7 +327,7 @@ useEffect(() => {
       <AlertDialogAction 
         className="bg-red-500 hover:bg-red-600"
         onClick={() => deleteMutation.mutate(deleteConfirm.id)}
-        disabled={deleteConfirm?.converted_to_invoice === 1}
+        disabled={deleteConfirm?.converted_to_invoice === true}
       >
         Delete Quotation
       </AlertDialogAction>
