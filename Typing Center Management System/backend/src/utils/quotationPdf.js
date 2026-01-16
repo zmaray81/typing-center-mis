@@ -2,6 +2,40 @@ import PDFDocument from "pdfkit";
 import path from "path";
 import fs from "fs";
 
+function formatPdfDate(dateString) {
+  try {
+    if (!dateString) return '-';
+    
+    let date;
+    
+    // Handle different date formats
+    if (typeof dateString === 'string') {
+      // If it's already in YYYY-MM-DD format
+      if (/^\d{4}-\d{2}-\d{2}$/.test(dateString)) {
+        const [year, month, day] = dateString.split('-');
+        return `${day}/${month}/${year}`;
+      }
+      
+      // If it's a full ISO string or other format
+      date = new Date(dateString);
+    } else if (dateString instanceof Date) {
+      date = dateString;
+    } else {
+      return '-';
+    }
+    
+    // Format as DD/MM/YYYY for PDF
+    const day = String(date.getDate()).padStart(2, '0');
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const year = date.getFullYear();
+    
+    return `${day}/${month}/${year}`;
+  } catch (err) {
+    console.error('Date formatting error:', err);
+    return '-';
+  }
+}
+
 const SERVICE_LABELS = {
   full_visa_inside: "Full Visa Inside",
   full_visa_outside: "Full Visa Outside",
@@ -145,7 +179,7 @@ export function generateQuotationPDF(quotation, res) {
   doc.font("Helvetica-Bold").text(`: ${quotation.quotation_number}`, 420, y, { align: "left" });
 
   doc.font("Helvetica").text(`Date`, 350, y + 20);
-  doc.font("Helvetica-Bold").text(`: ${quotation.date}`, 420, y + 20, { align: "left" });
+  doc.font("Helvetica-Bold").text(`: ${formatPdfDate(quotation.date)}`, 420, y + 20, { align: "left" });
 
   y += 90;
 
