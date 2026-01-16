@@ -65,10 +65,10 @@ export async function logAudit({
       );
     }
 
-    // PostgreSQL JSONB doesn't need stringification, but we'll keep it for consistency
-    const oldDataJson = oldData ? oldData : null;
-    const newDataJson = newData ? newData : null;
-    const changedFieldsJson = changedFields.length > 0 ? changedFields : [];
+    // ✅ FIX: Stringify all JSON data for PostgreSQL JSONB
+    const oldDataJson = oldData ? JSON.stringify(oldData) : null;
+    const newDataJson = newData ? JSON.stringify(newData) : null;
+    const changedFieldsJson = changedFields.length > 0 ? JSON.stringify(changedFields) : '[]';
 
     await execute(
       `INSERT INTO audit_log (
