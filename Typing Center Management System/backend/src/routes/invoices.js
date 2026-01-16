@@ -29,13 +29,33 @@ router.get("/", async (req, res) => {
       ORDER BY i.created_date DESC
     `);
 
-    // PostgreSQL returns JSONB as objects, no parsing needed
-    const invoices = rows.map(inv => ({
-      ...inv,
-      items: inv.items || [],
-      payments: inv.payments || [],
-      include_vat: Boolean(inv.include_vat)
-    }));
+    // ✅ FIX: Convert all number fields for each invoice
+    const invoices = rows.map(inv => {
+      // Ensure items is an array
+      const items = Array.isArray(inv.items) ? inv.items : [];
+      
+      // Ensure payments is an array
+      const payments = Array.isArray(inv.payments) ? inv.payments : [];
+      
+      return {
+        ...inv,
+        items: items.map(item => ({
+          ...item,
+          amount: Number(item.amount) || 0,
+          line_total: Number(item.line_total) || Number(item.amount) || 0
+        })),
+        payments: payments.map(payment => ({
+          ...payment,
+          amount: Number(payment.amount) || 0
+        })),
+        subtotal: Number(inv.subtotal) || 0,
+        vat_amount: Number(inv.vat_amount) || 0,
+        total: Number(inv.total) || 0,
+        amount_paid: Number(inv.amount_paid) || 0,
+        balance: Number(inv.balance) || 0,
+        include_vat: Boolean(inv.include_vat)
+      };
+    });
 
     res.json(invoices);
   } catch (err) {
@@ -71,8 +91,41 @@ router.get("/:id", async (req, res) => {
       return res.status(404).json({ error: "Invoice not found" });
     }
 
+    // ✅ FIX: Convert all number fields
     invoice.items = invoice.items || [];
     invoice.payments = invoice.payments || [];
+    
+    // Convert string numbers to actual numbers
+    invoice.subtotal = Number(invoice.subtotal) || 0;
+    invoice.vat_amount = Number(invoice.vat_amount) || 0;
+    invoice.total = Number(invoice.total) || 0;
+    invoice.amount_paid = Number(invoice.amount_paid) || 0;
+    invoice.balance = Number(invoice.balance) || 0;
+
+    function formatApiDate(dateString) {
+      if (!dateString) return '';
+      try {
+        const date = new Date(dateString);
+        return date.toISOString().split('T')[0]; // Returns YYYY-MM-DD format
+      } catch (err) {
+        return dateString;
+      }
+    }
+    invoice.date = formatApiDate(invoice.date);
+    
+    // Ensure items have proper numbers
+    invoice.items = invoice.items.map(item => ({
+      ...item,
+      amount: Number(item.amount) || 0,
+      line_total: Number(item.line_total) || Number(item.amount) || 0
+    }));
+    
+    // Ensure payments have proper numbers
+    invoice.payments = invoice.payments.map(payment => ({
+      ...payment,
+      amount: Number(payment.amount) || 0
+    }));
+
     invoice.include_vat = Boolean(invoice.include_vat);
 
     res.json(invoice);
@@ -435,6 +488,9 @@ router.post("/from-quotation/:quotationId", async (req, res) => {
     console.log("Subtotal:", Number(quotation.subtotal) || 0);
     console.log("Total:", Number(quotation.total) || 0);
 
+     const formattedDate = new Date(quotation.date).toISOString().split('T')[0];
+    console.log("Original date:", quotation.date, "Formatted date:", formattedDate);
+
     await execute(
       `INSERT INTO invoices (
         id,
@@ -556,13 +612,36 @@ router.get("/:id/pdf", async (req, res) => {
       return res.status(404).json({ message: "Invoice not found" });
     }
 
+    // ✅ FIX: Ensure all number fields are actually numbers
     invoice.items = invoice.items || [];
     invoice.payments = invoice.payments || [];
+    
+    // Convert string numbers to actual numbers for PDF
+    invoice.subtotal = Number(invoice.subtotal) || 0;
+    invoice.vat_amount = Number(invoice.vat_amount) || 0;
+    invoice.total = Number(invoice.total) || 0;
+    invoice.amount_paid = Number(invoice.amount_paid) || 0;
+    invoice.balance = Number(invoice.balance) || 0;
+    
+    // Also ensure items have proper numbers
+    invoice.items = invoice.items.map(item => ({
+      ...item,
+      amount: Number(item.amount) || 0,
+      line_total: Number(item.line_total) || Number(item.amount) || 0
+    }));
+    
+    // Also ensure payments have proper numbers
+    invoice.payments = invoice.payments.map(payment => ({
+      ...payment,
+      amount: Number(payment.amount) || 0
+    }));
+
     invoice.include_vat = Boolean(invoice.include_vat);
 
     generateInvoicePDF(invoice, res);
   } catch (err) {
-    console.error("PDF error:", err);
+    console.error("PDF error:", err.message);
+    console.error("Full error:", err);
     res.status(500).json({ message: "Failed to generate PDF" });
   }
 });
