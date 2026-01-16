@@ -2,6 +2,33 @@ import PDFDocument from "pdfkit";
 import path from "path";
 import fs from "fs";
 
+function formatDate(dateString) {
+  try {
+    if (!dateString) return '-';
+    
+    // If it's already a formatted date, return as is
+    if (typeof dateString === 'string' && dateString.includes('-')) {
+      const date = new Date(dateString);
+      return date.toLocaleDateString('en-GB', {
+        day: '2-digit',
+        month: '2-digit',
+        year: 'numeric'
+      });
+    }
+    
+    // If it's a Date object or timestamp
+    const date = new Date(dateString);
+    return date.toLocaleDateString('en-GB', {
+      day: '2-digit',
+      month: '2-digit',
+      year: 'numeric'
+    });
+  } catch (err) {
+    console.error('Date formatting error:', err);
+    return dateString || '-';
+  }
+}
+
 export function generateInvoicePDF(invoice, res) {
   const doc = new PDFDocument({
     size: "A4",
@@ -113,7 +140,7 @@ export function generateInvoicePDF(invoice, res) {
   doc.font("Helvetica-Bold").text(`: ${invoice.invoice_number}`, 420, y, { align: "left" });
 
   doc.font("Helvetica").text(`Date`, 350, y + 20);
-  doc.font("Helvetica-Bold").text(`: ${invoice.date}`, 420, y + 20, { align: "left" });
+doc.font("Helvetica-Bold").text(`: ${formatDate(invoice.date)}`, 420, y + 20, { align: "left" });
 
   doc.font("Helvetica").text(`Status`, 350, y + 40);
   const statusColor = invoice.payment_status === 'paid' ? '#10b981' :
