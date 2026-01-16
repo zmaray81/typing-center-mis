@@ -25,13 +25,20 @@ router.get("/:id", async (req, res) => {
       return res.status(404).json({ error: "Quotation not found" });
     }
 
-    // ✅ FIX: Convert date to yyyy-MM-dd for HTML input
-    const formattedDate = row.date ? new Date(row.date).toISOString().split('T')[0] : '';
+    function formatApiDate(dateString) {
+      if (!dateString) return '';
+      try {
+        const date = new Date(dateString);
+        return date.toISOString().split('T')[0]; // Returns YYYY-MM-DD format
+      } catch (err) {
+        return dateString;
+      }
+    }
 
     const quotation = {
       ...row,
       items: row.items || [],
-      date: formattedDate, // ✅ This will be "2026-01-16" format
+      date: formatApiDate(row.date),
       subtotal: Number(row.subtotal) || 0,
       vat_amount: Number(row.vat_amount) || 0,
       total: Number(row.total) || 0,
@@ -149,6 +156,8 @@ router.post("/", async (req, res) => {
       notes
     } = req.body;
 
+    const formattedDate = new Date(date).toISOString().split('T')[0];
+
     // ✅ FIX: Stringify items for PostgreSQL
     // PostgreSQL pg driver needs JSON string, not JavaScript object
     let itemsToInsert = items || [];
@@ -182,7 +191,7 @@ console.log("🧹 Items to insert (stringified):", itemsJson);
         license_type || null,
         activity || null,
         service_category || null,
-        date,
+        formattedDate,
         itemsToInsert,  // ✅ Use STRINGIFIED JSON
         subtotal || 0,
         vat_amount || 0,
@@ -232,6 +241,8 @@ router.put("/:id", async (req, res) => {
       notes
     } = req.body;
 
+    const formattedDate = new Date(date).toISOString().split('T')[0];
+
     // ✅ FIX: Stringify items
    const itemsToUpdate = JSON.stringify(items || []);
 
@@ -261,7 +272,7 @@ router.put("/:id", async (req, res) => {
         license_type || null,
         activity || null,
         service_category || null,
-        date,
+        formattedDate,
         itemsToUpdate,  // ✅ Use STRINGIFIED JSON
         subtotal || 0,
         vat_amount || 0,
