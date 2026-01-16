@@ -31,44 +31,50 @@ router.post("/", async (req, res) => {
     } = req.body;
 
     // ✅ Check for duplicates BEFORE inserting
-    let duplicateQuery = `
-      SELECT id, company_name, contact_person, phone, email 
-      FROM clients 
-      WHERE deleted_at IS NULL AND (
-    `;
-    
-    const params = [];
-    const conditions = [];
-    
-    // Check by phone
-    if (phone) {
-      conditions.push("phone = $1");
-      params.push(phone);
-    }
-    
-    // Check by email if provided
-    if (email) {
-      conditions.push("email = $2");
-      params.push(email);
-    }
-    
-    // Check by company name for company clients
-    if (client_type === 'company' && company_name) {
-      conditions.push("(company_name = $3 AND client_type = 'company')");
-      params.push(company_name);
-    }
-    
-    // Check by contact person for individual clients
-    if (client_type === 'individual' && contact_person) {
-      conditions.push("(contact_person = $4 AND client_type = 'individual')");
-      params.push(contact_person);
-    }
-    
-    // Check by trade license
-    if (trade_license_number) {
-      conditions.push("trade_license_number = $5");
-      params.push(trade_license_number);
-    }
+let duplicateQuery = `
+  SELECT id, company_name, contact_person, phone, email 
+  FROM clients 
+  WHERE deleted_at IS NULL AND (
+`;
+
+const params = [];
+const conditions = [];
+let paramCount = 1;
+
+// Check by phone
+if (phone) {
+  conditions.push(`phone = $${paramCount}`);
+  params.push(phone);
+  paramCount++;
+}
+
+// Check by email if provided
+if (email) {
+  conditions.push(`email = $${paramCount}`);
+  params.push(email);
+  paramCount++;
+}
+
+// Check by company name for company clients
+if (client_type === 'company' && company_name) {
+  conditions.push(`(company_name = $${paramCount} AND client_type = 'company')`);
+  params.push(company_name);
+  paramCount++;
+}
+
+// Check by contact person for individual clients
+if (client_type === 'individual' && contact_person) {
+  conditions.push(`(contact_person = $${paramCount} AND client_type = 'individual')`);
+  params.push(contact_person);
+  paramCount++;
+}
+
+// Check by trade license
+if (trade_license_number) {
+  conditions.push(`trade_license_number = $${paramCount}`);
+  params.push(trade_license_number);
+  paramCount++;
+}
     
     if (conditions.length === 0) {
       return res.status(400).json({ error: "No unique identifier provided" });
@@ -220,5 +226,6 @@ router.delete("/:id", async (req, res) => {
     });
   }
 });
+
 
 export default router;
