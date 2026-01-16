@@ -18,7 +18,7 @@ const getHeaders = () => {
 
 export const getQuotations = async (showAll = false) => {
   const url = showAll
-    ? `${API_BASE}/api/quotations/all`
+    ? `${API_BASE}/api/quotations`
     : `${API_BASE}/api/quotations`;
 
   const res = await fetch(url, {
@@ -78,3 +78,4 @@ export const generateWhatsAppMessage = (quotation) => {
          `Total Amount: AED ${quotation.total}\n` +
          `View Details: ${FRONTEND_URL}/quotations/${quotation.id}`;
 };
+
