@@ -169,7 +169,7 @@ const payDate = parseISO(rawDate);
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-amber-100 text-sm font-medium">Monthly Revenue</p>
-                <p className="text-3xl font-bold mt-1">AED {monthlyRevenue.toLocaleString()}</p>
+                <p className="text-3xl font-bold mt-1">AED {Math.round(monthlyRevenue).toLocaleString('en-US', { minimumFractionDigits: 0, maximumFractionDigits: 0 })}</p>
                 <p className="text-amber-100 text-xs mt-1">Click for breakdown</p>
               </div>
               <div className="w-12 h-12 bg-white/20 rounded-xl flex items-center justify-center">
@@ -184,7 +184,7 @@ const payDate = parseISO(rawDate);
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-slate-500 text-sm font-medium">Collections</p>
-                <p className="text-3xl font-bold text-slate-800 mt-1">AED {monthlyCollections.toLocaleString()}</p>
+                <p className="text-3xl font-bold text-slate-800 mt-1">AED {Math.round(monthlyCollections).toLocaleString('en-US', { minimumFractionDigits: 0, maximumFractionDigits: 0 })}</p>
               </div>
               <div className="w-12 h-12 bg-green-100 rounded-xl flex items-center justify-center">
                 <CreditCard className="w-6 h-6 text-green-600" />
@@ -201,7 +201,7 @@ const payDate = parseISO(rawDate);
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-slate-500 text-sm font-medium">Receivables</p>
-                <p className="text-3xl font-bold text-slate-800 mt-1">AED {totalReceivables.toLocaleString()}</p>
+                <p className="text-3xl font-bold text-slate-800 mt-1">AED {Math.round(totalReceivables).toLocaleString('en-US', { minimumFractionDigits: 0, maximumFractionDigits: 0 })}</p>
                 <p className="text-slate-400 text-xs mt-1">Click for details</p>
               </div>
               <div className="w-12 h-12 bg-red-100 rounded-xl flex items-center justify-center">
@@ -303,7 +303,7 @@ const payDate = parseISO(rawDate);
                         <p className="text-sm text-slate-500">{invoice.invoice_number}</p>
                       </div>
                       <div className="text-right">
-                        <p className="font-semibold text-slate-800">AED {invoice.total?.toLocaleString()}</p>
+                        <p className="font-semibold text-slate-800">AED {Math.round(invoice.total || 0).toLocaleString('en-US', { minimumFractionDigits: 0, maximumFractionDigits: 0 })}</p>
                         <Badge className={paymentStatusColors[invoice.payment_status]}>
                           {invoice.payment_status}
                         </Badge>
