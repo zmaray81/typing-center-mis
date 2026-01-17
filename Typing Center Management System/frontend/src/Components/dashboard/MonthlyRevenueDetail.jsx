@@ -55,19 +55,19 @@ export default function MonthlyRevenueDetail({ invoices, monthStart, monthEnd, o
         <Card>
           <CardContent className="p-5">
             <p className="text-slate-500 text-sm">Total Revenue</p>
-            <p className="text-2xl font-bold text-amber-600">AED {totalRevenue.toLocaleString()}</p>
+            <p className="text-2xl font-bold text-amber-600">AED {Math.round(totalRevenue).toLocaleString('en-US', { minimumFractionDigits: 0, maximumFractionDigits: 0 })}</p>
           </CardContent>
         </Card>
         <Card>
           <CardContent className="p-5">
             <p className="text-slate-500 text-sm">Received</p>
-            <p className="text-2xl font-bold text-green-600">AED {totalReceived.toLocaleString()}</p>
+            <p className="text-2xl font-bold text-green-600">AED {Math.round(totalReceived).toLocaleString('en-US', { minimumFractionDigits: 0, maximumFractionDigits: 0 })}</p>
           </CardContent>
         </Card>
         <Card>
           <CardContent className="p-5">
             <p className="text-slate-500 text-sm">Receivable</p>
-            <p className="text-2xl font-bold text-red-600">AED {totalReceivable.toLocaleString()}</p>
+            <p className="text-2xl font-bold text-red-600">AED {Math.round(totalReceivable).toLocaleString('en-US', { minimumFractionDigits: 0, maximumFractionDigits: 0 })}</p>
           </CardContent>
         </Card>
       </div>
@@ -87,7 +87,7 @@ export default function MonthlyRevenueDetail({ invoices, monthStart, monthEnd, o
                   </div>
                   <div>
                     <CardTitle className="text-lg">{group.client_name}</CardTitle>
-                    <p className="text-sm text-slate-500">{group.invoices.length} invoice(s) • AED {clientTotal.toLocaleString()}</p>
+                    <p className="text-sm text-slate-500">{group.invoices.length} invoice(s) • AED {Math.round(clientTotal).toLocaleString('en-US', { minimumFractionDigits: 0, maximumFractionDigits: 0 })}</p>
                   </div>
                 </div>
               </div>
@@ -116,9 +116,9 @@ export default function MonthlyRevenueDetail({ invoices, monthStart, monthEnd, o
                           ))}
                         </div>
                       </TableCell>
-                      <TableCell className="text-right font-semibold">AED {inv.total?.toLocaleString()}</TableCell>
-                      <TableCell className="text-right text-green-600">AED {inv.amount_paid?.toLocaleString()}</TableCell>
-                      <TableCell className="text-right text-red-600">AED {inv.balance?.toLocaleString()}</TableCell>
+                      <TableCell className="text-right font-semibold">AED {Math.round(inv.total || 0).toLocaleString('en-US', { minimumFractionDigits: 0, maximumFractionDigits: 0 })}</TableCell>
+                      <TableCell className="text-right text-green-600">AED {Math.round(inv.amount_paid || 0).toLocaleString('en-US', { minimumFractionDigits: 0, maximumFractionDigits: 0 })}</TableCell>
+                      <TableCell className="text-right text-red-600">AED {Math.round(inv.balance || 0).toLocaleString('en-US', { minimumFractionDigits: 0, maximumFractionDigits: 0 })}</TableCell>
                     </TableRow>
                   ))}
                 </TableBody>
