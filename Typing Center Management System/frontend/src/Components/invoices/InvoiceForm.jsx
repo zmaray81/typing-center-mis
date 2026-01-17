@@ -137,12 +137,12 @@ export default function InvoiceForm({ invoice, clients, onClose, onSuccess }) {
 
   const updateItem = (index, field, value) => {
     const newItems = [...formData.items];
-    newItems[index] = { ...newItems[index], [field]: field === 'amount' ? parseFloat(value) || 0 : value };
+    newItems[index] = { ...newItems[index], [field]: field === 'amount' ? parseInt(value) || 0 : value };
     setFormData({ ...formData, items: newItems });
   };
 
   const subtotal = formData.items.reduce((sum, item) => sum + (item.amount || 0), 0);
-  const vatAmount = formData.include_vat ? subtotal * 0.05 : 0;
+  const vatAmount = formData.include_vat ? Math.round(subtotal * 0.05) : 0;
   const total = subtotal + vatAmount;
 
   const handleSubmit = async (e) => {
@@ -304,7 +304,8 @@ export default function InvoiceForm({ invoice, clients, onClose, onSuccess }) {
                     <div className="w-32">
                       <Input 
                         type="number"
-                        step="0.01"
+                        step="1"
+                        min="0"
                         value={item.amount || ''}
                         onChange={(e) => updateItem(index, 'amount', e.target.value)}
                         placeholder="Amount"
