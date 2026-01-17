@@ -525,12 +525,12 @@ router.post("/from-quotation/:quotationId", async (req, res) => {
         quotation.activity,
         quotation.date,
         itemsJson,  // ✅ Use STRINGIFIED JSON for PostgreSQL
-        Number(quotation.subtotal) || 0,
-        Number(quotation.vat_amount) || 0,
-        Number(quotation.total) || 0,
+        Math.round(Number(quotation.subtotal) || 0),
+        Math.round(Number(quotation.vat_amount) || 0),
+        Math.round(Number(quotation.total) || 0),
         "unpaid",
         0,
-        Number(quotation.total) || 0,
+        Math.round(Number(quotation.total) || 0),
         '[]',  // ✅ Empty JSON array as string
         quotation.notes || ""
       ]
