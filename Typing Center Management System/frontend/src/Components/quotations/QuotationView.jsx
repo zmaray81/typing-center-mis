@@ -231,24 +231,44 @@ export default function QuotationView() {
 </Dialog>
 
           {/* WhatsApp Button */}
-         <Button 
+        <Button 
   variant="outline"
   onClick={() => {
-    // For production on Render
-    const pdfUrl = `https://typing-center-mis.onrender.com/api/quotations/${id}/pdf`;
+    // ✅ Use production URL
+    const API_BASE = import.meta.env.VITE_API_URL || "https://typing-center-mis.onrender.com";
+    const pdfUrl = `${API_BASE}/api/quotations/${id}/pdf`;
     
-    const message = `QUOTATION
-
-Quotation: ${quotation.quotation_number}
-Client: ${quotation.client_name}
-Date: ${quotation.date}
-Total: AED ${quotation.total}
-
-Download PDF here:
-${pdfUrl}
-
-Thank you!
-Bab Alyusr Business Setup Services`;
+    // ✅ Format date as YYYY-MM-DD
+    const formatDateForWhatsApp = (dateString) => {
+      try {
+        const date = new Date(dateString);
+        return date.toISOString().split('T')[0]; // Returns YYYY-MM-DD
+      } catch (err) {
+        return dateString;
+      }
+    };
+    
+    // ✅ Simple and clean message (keeping your existing format)
+    let message = `QUOTATION\n\n`;
+    message += `Quotation: ${quotation.quotation_number}\n`;
+    message += `Client: ${quotation.client_name}\n`;
+    
+    if (quotation.person_name) {
+      message += `Description: ${quotation.person_name}\n`;
+    }
+    
+    message += `Date: ${formatDateForWhatsApp(quotation.date)}\n`;
+    message += `Total: AED ${quotation.total}\n`;
+    
+    if (quotation.status && quotation.status !== 'draft') {
+      message += `Status: ${quotation.status}\n`;
+    }
+    
+    message += `\nDownload PDF here:\n`;
+    message += `${pdfUrl}\n\n`;
+    
+    message += `Thank you!\n`;
+    message += `Bab Alyusr Business Setup Services`;
     
     const whatsappUrl = `https://wa.me/?text=${encodeURIComponent(message)}`;
     window.open(whatsappUrl, '_blank');
@@ -378,3 +398,4 @@ Bab Alyusr Business Setup Services`;
     </div>
   );
 }
+
