@@ -254,7 +254,7 @@ export function generateQuotationPDF(quotation, res) {
 
     // Amount
     doc.text(
-      Number(item.amount || 0).toFixed(2),
+      Number(item.amount || 0).toFixed(0),
       480,
       y,
       { align: "right" }
@@ -277,13 +277,13 @@ export function generateQuotationPDF(quotation, res) {
 
   // Subtotal
   doc.text("Subtotal (AED)", 350, y);
-  doc.text(quotation.subtotal.toFixed(2), 480, y, { align: "right" });
+  doc.text(quotation.subtotal.toFixed(0), 480, y, { align: "right" });
 
   y += 18;
 
   // VAT
   doc.text("VAT (5%)", 350, y);
-  doc.text(quotation.vat_amount.toFixed(2), 480, y, { align: "right" });
+  doc.text(quotation.vat_amount.toFixed(0), 480, y, { align: "right" });
 
   y += 18;
 
@@ -305,7 +305,7 @@ export function generateQuotationPDF(quotation, res) {
   y += 10;
 
   // Total with highlight
-  const totalText = quotation.total.toFixed(2);
+  const totalText = quotation.total.toFixed(0);
   
   // Draw highlight box first
   doc
