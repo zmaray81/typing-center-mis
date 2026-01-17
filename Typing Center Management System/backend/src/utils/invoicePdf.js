@@ -214,7 +214,7 @@ doc.font("Helvetica-Bold").text(`: ${formatDate(invoice.date)}`, 420, y + 20, { 
 
     // Amount
     doc.text(
-      Number(item.amount || 0).toFixed(2),
+      Number(item.amount || 0).toFixed(0),
       480,
       y,
       { align: "right" }
@@ -237,14 +237,14 @@ doc.font("Helvetica-Bold").text(`: ${formatDate(invoice.date)}`, 420, y + 20, { 
 
   // Subtotal
   doc.text("Subtotal (AED)", 350, y);
-  doc.text(invoice.subtotal.toFixed(2), 480, y, { align: "right" });
+  doc.text(invoice.subtotal.toFixed(0), 480, y, { align: "right" });
 
   y += 15;
 
   // VAT if included
   if (invoice.include_vat) {
     doc.text("VAT (5%)", 350, y);
-    doc.text(invoice.vat_amount.toFixed(2), 480, y, { align: "right" });
+    doc.text(invoice.vat_amount.toFixed(0), 480, y, { align: "right" });
     y += 15;
   }
 
@@ -266,7 +266,7 @@ doc.font("Helvetica-Bold").text(`: ${formatDate(invoice.date)}`, 420, y + 20, { 
   y += 8;
 
   // Total with highlight
-  const totalText = invoice.total.toFixed(2);
+  const totalText = invoice.total.toFixed(0);
 
   // Draw highlight box
   doc
@@ -305,7 +305,7 @@ doc.font("Helvetica-Bold").text(`: ${formatDate(invoice.date)}`, 420, y + 20, { 
 
     if (cashTotal > 0) {
       doc.text("Cash Received:", 40, y);
-      doc.text(cashTotal.toFixed(2), 480, y, { align: "right" });
+      doc.text(cashTotal.toFixed(0), 480, y, { align: "right" });
       y += 15;
     }
 
@@ -316,7 +316,7 @@ doc.font("Helvetica-Bold").text(`: ${formatDate(invoice.date)}`, 420, y + 20, { 
 
     if (bankTotal > 0) {
       doc.text("Bank Transfer:", 40, y);
-      doc.text(bankTotal.toFixed(2), 480, y, { align: "right" });
+      doc.text(bankTotal.toFixed(0), 480, y, { align: "right" });
       y += 15;
     }
 
@@ -333,7 +333,7 @@ doc.font("Helvetica-Bold").text(`: ${formatDate(invoice.date)}`, 420, y + 20, { 
     const balanceColor = invoice.balance > 0 ? "#ef4444" : "#10b981";
     doc.fillColor(balanceColor).font("Helvetica-Bold");
     doc.text("Balance Due (AED):", 40, y);
-    doc.text(invoice.balance.toFixed(2), 480, y, { align: "right" });
+    doc.text(invoice.balance.toFixed(0), 480, y, { align: "right" });
     doc.fillColor("#2d3748");
   }
 
