@@ -380,66 +380,67 @@ const effectiveCurrentStep =
         </CardContent>
       </Card>
 
-      {/* Complete Step Dialog */}
-      <Dialog open={showStepDialog} onOpenChange={setShowStepDialog}>
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle>Complete Step</DialogTitle>
-          </DialogHeader>
-         <div className="space-y-4">
-  <p className="text-slate-600">
-    Mark "{steps.find(s => s.value === selectedStep)?.label}" as completed?
-  </p>
+{/* Complete Step Dialog */}
+<Dialog open={showStepDialog} onOpenChange={setShowStepDialog}>
+  <DialogContent aria-describedby="step-dialog-description">
+    <DialogHeader>
+      <DialogTitle>Complete Step</DialogTitle>
+    </DialogHeader>
+    <div className="space-y-4">
+      <p id="step-dialog-description" className="text-slate-600">
+        Mark "{steps.find(s => s.value === selectedStep)?.label}" as completed?
+      </p>
+      
+      <div>
+        <label className="text-sm font-medium text-slate-700">
+          Updated By <span className="text-red-500">*</span>
+        </label>
+        <Input
+          value={updatedBy}
+          onChange={(e) => setUpdatedBy(e.target.value)}
+          placeholder="Enter your name"
+          required
+        />
+      </div>
 
-  <div>
-    <label className="text-sm font-medium text-slate-700">
-      Updated By <span className="text-red-500">*</span>
-    </label>
-    <Input
-      value={updatedBy}
-      onChange={(e) => setUpdatedBy(e.target.value)}
-      placeholder="Enter your name"
-      required
-    />
-  </div>
+      <div>
+        <label className="text-sm font-medium text-slate-700">
+          Notes <span className="text-red-500">*</span>
+        </label>
+        <Textarea 
+          value={stepNote}
+          onChange={(e) => setStepNote(e.target.value)}
+          placeholder="Explain what was done in this step..."
+          rows={3}
+          required
+        />
+      </div>
 
-  <div>
-    <label className="text-sm font-medium text-slate-700">
-      Notes <span className="text-red-500">*</span>
-    </label>
-    <Textarea 
-      value={stepNote}
-      onChange={(e) => setStepNote(e.target.value)}
-      placeholder="Explain what was done in this step..."
-      rows={3}
-      required
-    />
-  </div>
+      <div className="flex gap-3">
+        <Button
+          variant="outline"
+          onClick={() => setShowStepDialog(false)}
+          className="flex-1"
+        >
+          Cancel
+        </Button>
 
-  <div className="flex gap-3">
-    <Button
-      variant="outline"
-      onClick={() => setShowStepDialog(false)}
-      className="flex-1"
-    >
-      Cancel
-    </Button>
-
-    <Button 
-      className="flex-1 bg-green-600 hover:bg-green-700"
-      onClick={handleCompleteStep}
-      disabled={
-        updating ||
-        !stepNote.trim() ||
-        !updatedBy.trim()
-      }
-    >
-      {updating ? 'Updating...' : 'Complete Step'}
-    </Button>
-  </div>
-</div>
-        </DialogContent>
-      </Dialog>
+        <Button 
+          className="flex-1 bg-green-600 hover:bg-green-700"
+          onClick={handleCompleteStep}
+          disabled={
+            updating ||
+            !stepNote.trim() ||
+            !updatedBy.trim()
+          }
+        >
+          {updating ? 'Updating...' : 'Complete Step'}
+        </Button>
+      </div>
+    </div>
+  </DialogContent>
+</Dialog>
     </div>
   );
+
 }
