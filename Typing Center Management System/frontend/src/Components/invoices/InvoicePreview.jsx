@@ -159,22 +159,57 @@ export default function InvoicePreview({ invoice, onClose, onEdit, onRecordPayme
 
           {/* WhatsApp Button */}
           <Button 
-            variant="outline"
-            onClick={() => {
-  const pdfUrl = `${API_BASE}/api/invoices/${invoice.id}/pdf`;
-  const FRONTEND_URL = window.location.origin;
-  const message = `Invoice ${invoice.invoice_number} from Bab Alyusr Business Setup Services\n` +
-                 `Client: ${invoice.client_name}\n` +
-                 `Total Amount: AED ${invoice.total}\n` +
-                 `Payment Status: ${invoice.payment_status}\n` +
-                 `View Invoice: ${FRONTEND_URL}/invoices`;
-  const whatsappUrl = `https://wa.me/?text=${encodeURIComponent(message)}`;
-  window.open(whatsappUrl, '_blank');
-}}
-          >
-            <MessageSquare className="w-4 h-4 mr-2" />
-            Send WhatsApp
-          </Button>
+  variant="outline"
+  onClick={() => {
+    // ✅ Use production URL
+    const API_BASE = import.meta.env.VITE_API_URL || "https://typing-center-mis.onrender.com";
+    const pdfUrl = `${API_BASE}/api/invoices/${invoice.id}/pdf`;
+    
+    // ✅ Format date as YYYY-MM-DD
+    const formatDateForWhatsApp = (dateString) => {
+      try {
+        const date = new Date(dateString);
+        return date.toISOString().split('T')[0]; // Returns YYYY-MM-DD
+      } catch (err) {
+        return dateString;
+      }
+    };
+    
+    // Calculate amounts
+    const paidAmount = invoice.amount_paid || 0;
+    
+    // ✅ Simple and clean message
+    let message = `INVOICE\n\n`;
+    message += `Invoice: ${invoice.invoice_number}\n`;
+    message += `Client: ${invoice.client_name}\n`;
+    
+    if (invoice.person_name) {
+      message += `Description: ${invoice.person_name}\n`;
+    }
+    
+    message += `Date: ${formatDateForWhatsApp(invoice.date)}\n`;
+    message += `Total: AED ${invoice.total}\n`;
+    
+    if (paidAmount > 0) {
+      message += `Paid: AED ${paidAmount}\n`;
+      message += `Balance: AED ${invoice.balance || invoice.total}\n`;
+    }
+    
+    message += `Status: ${invoice.payment_status}\n\n`;
+    
+    message += `Download PDF here:\n`;
+    message += `${pdfUrl}\n\n`;
+    
+    message += `Thank you!\n`;
+    message += `Bab Alyusr Business Setup Services`;
+    
+    const whatsappUrl = `https://wa.me/?text=${encodeURIComponent(message)}`;
+    window.open(whatsappUrl, '_blank');
+  }}
+>
+  <MessageSquare className="w-4 h-4 mr-2" />
+  Send WhatsApp
+</Button>
 
           <Button variant="outline" onClick={handlePrint}>
             <Printer className="w-4 h-4 mr-2" /> Print
@@ -426,3 +461,4 @@ export default function InvoicePreview({ invoice, onClose, onEdit, onRecordPayme
     </div>
   );
 }
+
