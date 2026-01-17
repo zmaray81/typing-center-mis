@@ -39,7 +39,7 @@ export default function ReceivablesDetail({ invoices, onClose }) {
         </Button>
         <div>
           <h1 className="text-2xl font-bold text-slate-800">Receivables Breakdown</h1>
-          <p className="text-slate-500">Total: AED {totalReceivables.toLocaleString()}</p>
+          <p className="text-slate-500">Total: AED {Math.round(totalReceivables).toLocaleString('en-US', { minimumFractionDigits: 0, maximumFractionDigits: 0 })}</p>
         </div>
       </div>
 
@@ -63,7 +63,7 @@ export default function ReceivablesDetail({ invoices, onClose }) {
                 </div>
                 <div className="text-right">
                   <p className="text-sm text-slate-500">Receivable</p>
-                  <p className="text-xl font-bold text-red-600">AED {clientBalance.toLocaleString()}</p>
+                  <p className="text-xl font-bold text-red-600">AED {Math.round(clientBalance).toLocaleString('en-US', { minimumFractionDigits: 0, maximumFractionDigits: 0 })}</p>
                 </div>
               </div>
             </CardHeader>
@@ -71,15 +71,15 @@ export default function ReceivablesDetail({ invoices, onClose }) {
               <div className="grid grid-cols-3 gap-4 mb-4 p-4 bg-slate-50 rounded-lg">
                 <div>
                   <p className="text-sm text-slate-500">Total Amount</p>
-                  <p className="text-lg font-semibold">AED {clientTotal.toLocaleString()}</p>
+                  <p className="text-lg font-semibold">AED {Math.round(clientTotal).toLocaleString('en-US', { minimumFractionDigits: 0, maximumFractionDigits: 0 })}</p>
                 </div>
                 <div>
                   <p className="text-sm text-slate-500">Paid Amount</p>
-                  <p className="text-lg font-semibold text-green-600">AED {clientPaid.toLocaleString()}</p>
+                  <p className="text-lg font-semibold text-green-600">AED {Math.round(clientPaid).toLocaleString('en-US', { minimumFractionDigits: 0, maximumFractionDigits: 0 })}</p>
                 </div>
                 <div>
                   <p className="text-sm text-slate-500">Balance</p>
-                  <p className="text-lg font-semibold text-red-600">AED {clientBalance.toLocaleString()}</p>
+                  <p className="text-lg font-semibold text-red-600">AED {Math.round(clientBalance).toLocaleString('en-US', { minimumFractionDigits: 0, maximumFractionDigits: 0 })}</p>
                 </div>
               </div>
 
@@ -109,9 +109,9 @@ export default function ReceivablesDetail({ invoices, onClose }) {
                           )}
                         </div>
                       </TableCell>
-                      <TableCell className="text-right">AED {inv.total?.toLocaleString()}</TableCell>
-                      <TableCell className="text-right text-green-600">AED {inv.amount_paid?.toLocaleString()}</TableCell>
-                      <TableCell className="text-right text-red-600 font-semibold">AED {inv.balance?.toLocaleString()}</TableCell>
+                      <TableCell className="text-right">AED {Math.round(inv.total || 0).toLocaleString('en-US', { minimumFractionDigits: 0, maximumFractionDigits: 0 })}</TableCell>
+                      <TableCell className="text-right text-green-600">AED {Math.round(inv.amount_paid || 0).toLocaleString('en-US', { minimumFractionDigits: 0, maximumFractionDigits: 0 })}</TableCell>
+                      <TableCell className="text-right text-red-600 font-semibold">AED {Math.round(inv.balance || 0).toLocaleString('en-US', { minimumFractionDigits: 0, maximumFractionDigits: 0 })}</TableCell>
                     </TableRow>
                   ))}
                 </TableBody>
