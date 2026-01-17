@@ -10,6 +10,7 @@ import applicationsRoutes from "./routes/applications.js";
 import clientsRoutes from "./routes/clients.js";
 import passwordResetRouter from './routes/passwordReset.js';
 import { initializeDatabase } from './db.js';
+import usefulLinksRoutes from './routes/usefulLinks.js';
 
 const app = express();
 
@@ -55,6 +56,7 @@ app.use("/api/invoices", invoicesRouter);
 app.use("/api/payments", paymentsRoutes);
 app.use("/api/applications", applicationsRoutes);
 app.use('/api/clients', clientsRoutes);
+app.use('/api/useful-links', usefulLinksRoutes);
 
 const PORT = process.env.PORT || 4000;
 app.listen(PORT, () => {
