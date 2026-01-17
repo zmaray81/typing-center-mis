@@ -165,6 +165,20 @@ CREATE TABLE IF NOT EXISTS audit_log (
 );
 
 /* =========================
+   USEFUL LINKS
+========================= */
+CREATE TABLE IF NOT EXISTS useful_links (
+  id SERIAL PRIMARY KEY,
+  name TEXT NOT NULL,
+  url TEXT NOT NULL,
+  description TEXT,
+  category TEXT,
+  icon TEXT,
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+  updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+);
+
+/* =========================
    CREATE INDEXES FOR BETTER PERFORMANCE
 ========================= */
 CREATE INDEX IF NOT EXISTS idx_clients_client_code ON clients(client_code);
@@ -177,4 +191,5 @@ CREATE INDEX IF NOT EXISTS idx_applications_client_id ON applications(client_id)
 CREATE INDEX IF NOT EXISTS idx_applications_application_number ON applications(application_number);
 CREATE INDEX IF NOT EXISTS idx_users_username ON users(username);
 CREATE INDEX IF NOT EXISTS idx_audit_log_record_id ON audit_log(record_id);
+
 CREATE INDEX IF NOT EXISTS idx_audit_log_created_at ON audit_log(created_at DESC);
